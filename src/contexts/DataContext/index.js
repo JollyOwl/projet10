@@ -9,10 +9,21 @@ import {
 
 const DataContext = createContext({});
 
+// verifier que les data json sont bien récupéées.
 export const api = {
   loadData: async () => {
-    const json = await fetch("/events.json");
-    return json.json();
+    try {
+      const response = await fetch("/events.json");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const json = await response.json();
+      console.log(json); // Affiche les données récupérées dans la console
+      return json;
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+      throw error;
+    }
   },
 };
 
