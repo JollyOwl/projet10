@@ -36,7 +36,7 @@ const Slider = () => {
               index === idx ? "display" : "hide"
             }`}
           >
-            {console.log(event.id)}
+            {console.log("event id : ", event.id)}
             <img src={event.cover} alt="forum" />
             <div className="SlideCard__descriptionContainer">
               <div className="SlideCard__description">

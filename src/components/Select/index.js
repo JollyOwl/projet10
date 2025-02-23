@@ -11,7 +11,7 @@ const Select = ({
   name,
   titleEmpty,
   label,
-  type = "normal",
+  selectType = "normal", // Renommé de `type` à `selectType`
 }) => {
   const [value, setValue] = useState();
   const [collapsed, setCollapsed] = useState(true);
@@ -21,7 +21,7 @@ const Select = ({
     setCollapsed(newValue);
   };
   return (
-    <div className={`SelectContainer ${type}`} data-testid="select-testid">
+    <div className={`SelectContainer ${selectType}`} data-testid="select-testid"> {/* Utilisation de `selectType` ici */}
       {label && <div className="label">{label}</div>}
       <div className="Select">
         <ul>
@@ -87,15 +87,15 @@ Select.propTypes = {
   name: PropTypes.string,
   titleEmpty: PropTypes.bool,
   label: PropTypes.string,
-  type: PropTypes.string,
-}
+  selectType: PropTypes.string, // Modification ici
+};
 
 Select.defaultProps = {
   onChange: () => null,
   titleEmpty: false,
   label: "",
-  type: "normal",
+  selectType: "normal", // Modification ici
   name: "select",
-}
+};
 
 export default Select;

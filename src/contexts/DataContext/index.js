@@ -44,14 +44,7 @@ export const DataProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await getData();
-      } catch (error) {
-        console.error("Error fetching data in useEffect:", error);
-      }
-    };
-    fetchData();
+    getData();
   }, [getData]);
 
   useEffect(() => {
