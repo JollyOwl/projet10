@@ -29,39 +29,37 @@ const Slider = () => {
   return (
     <div className="SlideCardList">
       {byDateDesc?.map((event, idx) => (
-        <>
-          <div
-            key={event.id}
-            className={`SlideCard SlideCard--${
-              index === idx ? "display" : "hide"
-            }`}
-          >
-            {console.log("event id : ", event.id)}
-            <img src={event.cover} alt="forum" />
-            <div className="SlideCard__descriptionContainer">
-              <div className="SlideCard__description">
-                <h3>{event.title}</h3>
-                <p>{event.description}</p>
-                <div>{getMonth(new Date(event.date))}</div>
-              </div>
+        <div
+          key={event.id}  // Utilisation de event.id comme clé unique
+          className={`SlideCard SlideCard--${index === idx ? "display" : "hide"}`}
+        >
+          {console.log("event id : ", event.id)}
+          <img src={event.cover} alt="forum" />
+          <div className="SlideCard__descriptionContainer">
+            <div className="SlideCard__description">
+              <h3>{event.title}</h3>
+              <p>{event.description}</p>
+              <div>{getMonth(new Date(event.date))}</div>
             </div>
           </div>
-          <div className="SlideCard__paginationContainer">
-            <div className="SlideCard__pagination">
-              {byDateDesc.map((_, radioIdx) => (
-                <input
-                  key={`${event.id}`}
-                  type="radio"
-                  name="radio-button"
-                  checked={index === radioIdx}
-                />
-              ))}
-            </div>
-          </div>
-        </>
+        </div>
       ))}
+      <div className="SlideCard__paginationContainer">
+        <div className="SlideCard__pagination">
+          {byDateDesc.map((event) => (
+            <input
+              key={event.id}  // Utilisation de event.id comme clé unique pour les radios
+              type="radio"
+              name="radio-button"
+              checked={index === byDateDesc.indexOf(event)}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
+  
+  
 };
 
 export default Slider;
