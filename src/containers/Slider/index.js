@@ -8,16 +8,23 @@ const Slider = () => {
   const { data } = useData();
   const [index, setIndex] = useState(0);
   const byDateDesc = data?.focus.sort((evtA, evtB) =>
-    new Date(evtA.date) - new Date(evtB.date));
+    new Date(evtA.date) - new Date(evtB.date)
+  );
+
   const nextCard = () => {
-    setTimeout(
-      () => setIndex(index < byDateDesc.length - 1 ? index + 1 : 0),
-      5000
-    );
+    const timeoutId = setTimeout(() => {
+      if (byDateDesc && byDateDesc.length > 0) {
+        setIndex(index < byDateDesc.length - 1 ? index + 1 : 0);
+      }
+    }, 5000);
+    return timeoutId;
   };
+
   useEffect(() => {
-    nextCard();
-  });
+    const timeoutId = nextCard();
+    return () => clearTimeout(timeoutId); // Fonction de nettoyage
+  }, [index]);
+
   return (
     <div className="SlideCardList">
       {byDateDesc?.map((event, idx) => (
@@ -28,6 +35,7 @@ const Slider = () => {
               index === idx ? "display" : "hide"
             }`}
           >
+            {console.log(event.id)}
             <img src={event.cover} alt="forum" />
             <div className="SlideCard__descriptionContainer">
               <div className="SlideCard__description">

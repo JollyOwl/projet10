@@ -13,7 +13,9 @@ import Modal from "../../containers/Modal";
 import { useData } from "../../contexts/DataContext";
 
 const Page = () => {
-  const {last} = useData()
+  const {last} = useData();
+  console.log("Dernière prestation:", last);
+
   return <>
     <header>
       <Menu />
@@ -123,6 +125,7 @@ const Page = () => {
           small
           label="boom"
         />
+        {console.log("Props EventCard:", last)}
       </div>
       <div className="col contact">
         <h3>Contactez-nous</h3>

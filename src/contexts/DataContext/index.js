@@ -9,7 +9,7 @@ import {
 
 const DataContext = createContext({});
 
-// verifier que les data json sont bien récupéées.
+// récupère /events.json
 export const api = {
   loadData: async () => {
     try {
@@ -18,7 +18,7 @@ export const api = {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const json = await response.json();
-      console.log(json); // Affiche les données récupérées dans la console
+      console.log(json); 
       return json;
     } catch (error) {
       console.error("Failed to fetch data:", error);
@@ -27,21 +27,40 @@ export const api = {
   },
 };
 
+// Fournit les data via le contexte 
 export const DataProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
+
+  // récupère les data et met à jour le state 
   const getData = useCallback(async () => {
     try {
-      setData(await api.loadData());
+      const newData = await api.loadData();
+      console.log("fetched data:", newData);
+      setData(newData);
     } catch (err) {
       setError(err);
     }
   }, []);
+
+  // appelle getData au montage
   useEffect(() => {
     if (data) return;
     getData();
-  });
-  
+  }, [data, getData]);
+
+  // Ajout de logs pour le débogage
+  useEffect(() => {
+    if (error) {
+      console.error("Error fetching data:", error);
+    } else if (data) {
+      console.log("Data fetched successfully in DataContext.js:", data);
+    } else {
+      console.log("Data is still loading in DataContext.js");
+    }
+  }, [data, error]);
+
+  // fournit les data/erreur  
   return (
     <DataContext.Provider
       // eslint-disable-next-line react/jsx-no-constructed-context-values
