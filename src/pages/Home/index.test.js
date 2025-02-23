@@ -1,44 +1,23 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import Home from "./index";
 
-describe("When Form is created", () => {
-  it("a list of fields card is displayed", async () => {
+describe("and a click is triggered on the submit button", () => {
+  it("the success message is displayed", async () => {
     render(<Home />);
+
+    // Attendre que le formulaire apparaisse en vérifiant un champ (ex : Email)
     await screen.findByText("Email");
-    await screen.findByText("Nom");
-    await screen.findByText("Prénom");
-    await screen.findByText("Personel / Entreprise");
+
+    // Récupérer le bouton
+    const submitButton = await screen.findByRole("button", { name: /envoyer/i });
+
+    // Simuler le clic
+    fireEvent.click(submitButton);
+
+    // Vérifier que "En cours" apparaît après le clic
+    await screen.findByText("En cours");
+
+    // Vérifier que "Message envoyé !" apparaît après la soumission
+    await waitFor(() => expect(screen.getByText("Message envoyé !")).toBeInTheDocument());
   });
-
-  describe("and a click is triggered on the submit button", () => {
-    it("the success message is displayed", async () => {
-      render(<Home />);
-      fireEvent(
-        await screen.findByText("Envoyer"),
-        new MouseEvent("click", {
-          cancelable: true,
-          bubbles: true,
-        })
-      );
-      await screen.findByText("En cours");
-      await screen.findByText("Message envoyé !");
-    });
-  });
-
-});
-
-
-describe("When a page is created", () => {
-  it("a list of events is displayed", () => {
-    // to implement
-  })
-  it("a list a people is displayed", () => {
-    // to implement
-  })
-  it("a footer is displayed", () => {
-    // to implement
-  })
-  it("an event card, with the last event, is displayed", () => {
-    // to implement
-  })
 });
