@@ -4,6 +4,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
@@ -18,7 +19,7 @@ export const api = {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const json = await response.json();
-      console.log(json); 
+      console.log("Data fetched:", json);
       return json;
     } catch (error) {
       console.error("Failed to fetch data:", error);
@@ -27,57 +28,61 @@ export const api = {
   },
 };
 
-// Fournit les data via le contexte 
+// Fournit les data via le context
 export const DataProvider = ({ children }) => {
-  const [error, setError] = useState(null);
+  const [fetchError, setFetchError] = useState(null); // Renommé pour éviter le shadowing
   const [data, setData] = useState(null);
 
-  // récupère les data et met à jour le state 
   const getData = useCallback(async () => {
     try {
       const newData = await api.loadData();
       console.log("fetched data:", newData);
       setData(newData);
     } catch (err) {
-      setError(err);
+      setFetchError(err); // Utilisation de fetchError pour ne pas faire de shadowing
     }
   }, []);
 
-  // appelle getData au montage
   useEffect(() => {
-    if (data) return;
-    getData();
-  }, [data, getData]);
+    const fetchData = async () => {
+      try {
+        await getData();
+      } catch (error) {
+        console.error("Error fetching data in useEffect:", error);
+      }
+    };
+    fetchData();
+  }, [getData]);
 
-  // Ajout de logs pour le débogage
   useEffect(() => {
-    if (error) {
-      console.error("Error fetching data:", error);
+    if (fetchError) {
+      console.error("Error fetching data:", fetchError);
     } else if (data) {
       console.log("Data fetched successfully in DataContext.js:", data);
     } else {
       console.log("Data is still loading in DataContext.js");
     }
-  }, [data, error]);
+  }, [data, fetchError]);
 
-  // fournit les data/erreur  
+  const value = useMemo(() => ({
+    data,
+    error: fetchError, // Utilisation de fetchError ici
+    last: Array.isArray(data?.events) && data.events.length > 0 ? data.events[data.events.length - 1] : null,
+  }), [data, fetchError]);
+
   return (
-    <DataContext.Provider
-      // eslint-disable-next-line react/jsx-no-constructed-context-values
-      value={{
-        data,
-        error,
-      }}
-    >
+    <DataContext.Provider value={value}>
       {children}
     </DataContext.Provider>
   );
 };
 
+
 DataProvider.propTypes = {
   children: PropTypes.node.isRequired,
-}
+};
 
+// Assure-toi que cet export est bien en dehors de DataProvider
 export const useData = () => useContext(DataContext);
 
 export default DataContext;
