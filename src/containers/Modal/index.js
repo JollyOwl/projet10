@@ -9,7 +9,14 @@ const Modal = ({ opened, Content, children }) => {
     <>
       {children({ isOpened, setIsOpened })}
       {isOpened && (
-        <div className="modal">
+        <div 
+          className="modal"
+          role="dialog"
+          aria-modal="true"
+          data-testid="modal-testid"
+          >
+
+
           <div className="content">
             {Content}
             <button

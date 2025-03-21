@@ -6,35 +6,45 @@ import "./style.scss";
 
 const Slider = () => {
   const { data } = useData();
-  console.log("Slider data", data);
   const [index, setIndex] = useState(0);
-  const byDateDesc = data?.focus.sort((evtA, evtB) =>
-    new Date(evtA.date) - new Date(evtB.date)
+
+  // Tri des événements par date décroissante
+  const byDateDesc = data?.focus?.sort((evtA, evtB) =>
+    new Date(evtB.date) - new Date(evtA.date)
   );
 
-  const nextCard = () => {
-    const timeoutId = setTimeout(() => {
-      if (byDateDesc && byDateDesc.length > 0) {
-        setIndex(index < byDateDesc.length - 1 ? index + 1 : 0);
-      }
-    }, 5000);
-    return timeoutId;
+  // Gestion du changement de slide manuel
+  const handleRadioChange = (radioIndex) => {
+    setIndex(radioIndex);
   };
 
+  // Gestion du défilement automatique
+  const nextCard = () => {
+    if (byDateDesc && byDateDesc.length > 0) {
+      setIndex(index < byDateDesc.length - 1 ? index + 1 : 0);
+    }
+  };
+
+  // Effet pour le défilement automatique
   useEffect(() => {
-    const timeoutId = nextCard();
-    return () => clearTimeout(timeoutId); // Fonction de nettoyage
-  }, [index]);
+    const timeoutId = setTimeout(nextCard, 5000);
+    return () => clearTimeout(timeoutId);
+  }, [index, byDateDesc]);
+
+  // Si pas de données, afficher un message
+  if (!byDateDesc || byDateDesc.length === 0) {
+    return <div className="SlideCardList">Aucun événement disponible</div>;
+  }
 
   return (
     <div className="SlideCardList">
-      {byDateDesc?.map((event, idx) => (
+      {/* Cartes de slides */}
+      {byDateDesc.map((event, idx) => (
         <div
-          key={event.id}  // Utilisation de event.id comme clé unique
+          key={event.id}
           className={`SlideCard SlideCard--${index === idx ? "display" : "hide"}`}
         >
-          {console.log("event id : ", event.id)}
-          <img src={event.cover} alt="forum" />
+          <img src={event.cover} alt={event.title} />
           <div className="SlideCard__descriptionContainer">
             <div className="SlideCard__description">
               <h3>{event.title}</h3>
@@ -44,22 +54,24 @@ const Slider = () => {
           </div>
         </div>
       ))}
+
+      {/* Pagination */}
       <div className="SlideCard__paginationContainer">
         <div className="SlideCard__pagination">
-          {byDateDesc.map((event) => (
+          {byDateDesc.map((event, idx) => (
             <input
-              key={event.id}  // Utilisation de event.id comme clé unique pour les radios
+              key={event.id}
               type="radio"
               name="radio-button"
-              checked={index === byDateDesc.indexOf(event)}
+              checked={index === idx}
+              onChange={() => handleRadioChange(idx)}
+              aria-label={`Slide ${idx + 1}`}
             />
           ))}
         </div>
       </div>
     </div>
   );
-  
-  
 };
 
 export default Slider;

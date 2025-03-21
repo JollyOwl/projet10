@@ -19,7 +19,7 @@ export const api = {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const json = await response.json();
-      console.log("Data fetched:", json);
+      console.log("%cData fetched:", json);
       return json;
     } catch (error) {
       console.error("Failed to fetch data:", error);

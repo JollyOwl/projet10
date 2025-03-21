@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import EventCard from "../../components/EventCard";
 import Select from "../../components/Select";
 import { useData } from "../../contexts/DataContext";
@@ -11,74 +11,99 @@ const PER_PAGE = 9;
 
 const EventList = () => {
   const { data, error } = useData();
-  const [type, setType] = useState(null); // Utilisation de `type` sans conflit
+  const [type, setType] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedEventId, setSelectedEventId] = useState(null);
 
-  // Filtrage des événements par type et pagination
-  const filteredEvents = useMemo(() => {
-    const events = data?.events || [];
-    const filteredByType = type ? events.filter((event) => event.type === type) : events;
-    const startIndex = (currentPage - 1) * PER_PAGE;
-    const endIndex = startIndex + PER_PAGE;
-    return filteredByType.slice(startIndex, endIndex);
-  }, [data?.events, type, currentPage]);
+  // Gestion des erreurs de chargement
+  if (error) {
+    return <div>Une erreur est survenue lors du chargement des événements.</div>;
+  }
 
-  // Renommage de 'evtType' pour éviter le conflit de noms
-  const changeType = (newType) => {
-    setCurrentPage(1); // Réinitialisation de la page
-    setType(newType); // Mise à jour du type sélectionné
+  // Gestion du chargement initial
+  if (!data || !data.events) {
+    return <div>Chargement des événements...</div>;
+  }
+
+  // Filtrage des événements
+  const filteredEvents = data.events.filter(
+    (event) => !type || event.type === type
+  );
+
+  // Calcul de la pagination
+  const pageCount = Math.ceil(filteredEvents.length / PER_PAGE);
+  const startIndex = (currentPage - 1) * PER_PAGE;
+  const visibleEvents = filteredEvents.slice(
+    startIndex,
+    startIndex + PER_PAGE
+  );
+
+  // Liste des types uniques d'événements
+  const eventTypes = Array.from(
+    new Set(data.events.map((event) => event.type))
+  );
+
+  // Gestionnaires d'événements
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
-  const pageNumber = Math.floor(
-    (data?.events.filter(event => !type || event.type === type).length || 0) / PER_PAGE
-  ) + 1;
+  const handleTypeChange = (newType) => {
+    setType(newType);
+    setCurrentPage(1); // Réinitialiser à la première page lors du changement de filtre
+  };
 
-  // Liste des types d'événements uniques
-  const typeList = useMemo(() => {
-    const types = data?.events.map((event) => event.type);
-    // eslint-disable-next-line no-shadow
-    return new Set(types.filter(type => type && typeof type === 'string' && type.trim() !== '')); // Filtrage des types invalides
-  }, [data?.events]);
+  const handleEventClick = (eventId) => {
+    setSelectedEventId(eventId);
+  };
 
   return (
     <>
-      {error && <div>An error occured</div>}
-      {data === null ? (
-        "loading"
-      ) : (
-        <>
-          <h3 className="SelectTitle">Catégories</h3>
-          <Select
-            selection={Array.from(typeList)}
-            onChange={(value) => (value ? changeType(value) : changeType(null))}
+      {selectedEventId && (
+        <Modal
+          Content={<ModalEvent event={selectedEventId} />}
+          onClose={() => setSelectedEventId(null)}
+        />
+      )}
+
+      <div className="SelectContainer">
+        <Select
+          selection={eventTypes}
+          onChange={handleTypeChange}
+          value={type}
+          placeholder="Filtrer par type"
+          aria-label="Filtre par type d'événement"
+        />
+      </div>
+
+      <div className="ListContainer" data-testid="list-container-testid">
+        {visibleEvents.map((event) => (
+          <EventCard
+            key={event.id}
+            imageSrc={event.cover} // Assuming event.cover contains the image URL
+            title={event.title}
+            date={new Date(event.date)}
+            label={event.type}
+            onClick={() => handleEventClick(event.id)}
           />
-          <div id="events" className="ListContainer">
-            {filteredEvents.map((event) => (
-              <Modal key={event.id} Content={<ModalEvent event={event} />}>
-                {({ setIsOpened }) => (
-                  <EventCard
-                    onClick={() => setIsOpened(true)}
-                    imageSrc={event.cover}
-                    title={event.title}
-                    date={new Date(event.date)}
-                    label={event.type}
-                  />
-                )}
-              </Modal>
-            ))}
-          </div>
-          <div className="Pagination">
-            {[...Array(pageNumber || 0)].map((_, n) => (
-              <a
-                key={`page-${n + 1}`}  // Utilisation d'une clé unique pour chaque page
-                href="#events"
-                onClick={() => setCurrentPage(n + 1)}
-              >
-                {n + 1}
-              </a>
-            ))}
-          </div>
-        </>
+        ))}
+      </div>
+
+      {pageCount > 1 && (
+        <div className="Pagination">
+          {[...Array(pageCount)].map((_, index) => (
+            <button
+              type="button"
+              key={`page-${index + 1}`}
+              onClick={() => handlePageChange(index + 1)}
+              className={currentPage === index + 1 ? "active" : ""}
+              aria-label={`Page ${index + 1}`}
+              aria-current={currentPage === index + 1 ? "page" : undefined}
+            >
+              {index + 1}
+            </button>
+          ))}
+        </div>
       )}
     </>
   );

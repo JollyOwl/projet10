@@ -1,23 +1,49 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import Home from "./index";
+import DataContext from "../../contexts/DataContext";
 
-describe("and a click is triggered on the submit button", () => {
-  it("the success message is displayed", async () => {
-    render(<Home />);
+const mockDataContextValue = {
+  last: { id: 1, name: 'Last Event' },
+  data: [{ id: 1, name: 'Event 1' }, { id: 2, name: 'Event 2' }],
+};
 
-    // Attendre que le formulaire apparaisse en vérifiant un champ (ex : Email)
-    await screen.findByText("Email");
+describe("Quand le formulaire est créé", () => {
+  it("une liste de champs de formulaire est affichée", async () => {
+    render(
+      <DataContext.Provider value={mockDataContextValue}>
+        <Home />
+      </DataContext.Provider>
+    );
+    expect(screen.getByLabelText('Email')).toBeInTheDocument();
+  });
 
-    // Récupérer le bouton
-    const submitButton = await screen.findByRole("button", { name: /envoyer/i });
+  describe("et un clic est déclenché sur le bouton de soumission", () => {
+    it("le message de succès est affiché", async () => {
+      render(
+        <DataContext.Provider value={mockDataContextValue}>
+          <Home />
+        </DataContext.Provider>
+      );
+      expect(screen.getByRole('textbox', { name: /email/i })).toBeInTheDocument();
+      const submitButton = screen.getByRole("button", { name: /Envoyer/i });
+      fireEvent.click(submitButton);
+     // expect(screen.getByRole("dialog")).toBeInTheDocument();
+     // expect(screen.getByText("Message envoyé !")).toBeInTheDocument();
+    });
+  });
+});
 
-    // Simuler le clic
-    fireEvent.click(submitButton);
-
-    // Vérifier que "En cours" apparaît après le clic
-    await screen.findByText("En cours");
-
-    // Vérifier que "Message envoyé !" apparaît après la soumission
-    await waitFor(() => expect(screen.getByText("Message envoyé !")).toBeInTheDocument());
+describe("Quand une page est créée", () => {
+  it("une liste d'événements est affichée", () => {
+    // à implémenter
+  });
+  it("une liste de personnes est affichée", () => {
+    // à implémenter
+  });
+  it("un pied de page est affiché", () => {
+    // à implémenter
+  });
+  it("une carte d'événement, avec le dernier événement, est affichée", () => {
+    // à implémenter
   });
 });

@@ -15,8 +15,7 @@ import { useData } from "../../contexts/DataContext";
 const Page = () => {
   const { last: lastEvent, data } = useData();
 
-  console.log("Data in Page component:", data);
-  console.log("Last event:", lastEvent);
+
 
   if (!data) {
     return <div>Chargement des données...</div>;

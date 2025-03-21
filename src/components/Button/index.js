@@ -12,7 +12,7 @@ const Button = ({ title, onClick, type, disabled, children }) => {
     case BUTTON_TYPES.DEFAULT:
       return (
         <button
-          type="button"
+          type={type === BUTTON_TYPES.SUBMIT ? "submit" : "button"}
           disabled={disabled}
           className="Button"
           data-testid="button-test-id"
