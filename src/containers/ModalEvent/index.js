@@ -26,7 +26,7 @@ const ModalEvent = ({ event }) => (
       <div className="ModalEvent__descriptionContainer">
         <h3>Prestations</h3>
         {event?.prestations?.map((presta) => (
-          <div key={presta.id}>{presta}</div>
+          <div key={presta}>{presta}</div>
         ))}
       </div>
     </div>
