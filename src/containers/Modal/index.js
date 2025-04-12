@@ -1,28 +1,36 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Icon from "../../components/Icon";
 import "./style.scss";
 
-const Modal = ({ opened, Content, children }) => {
+const Modal = ({ opened, Content, children, onClose }) => {
   const [isOpened, setIsOpened] = useState(opened);
+
+  useEffect(() => {
+    setIsOpened(opened);
+  }, [opened]);
+
+  const handleClose = () => {
+    setIsOpened(false);
+    if (onClose) onClose();
+  };
+
   return (
     <>
-      {children({ isOpened, setIsOpened })}
+      {typeof children === "function" ? children({ isOpened, setIsOpened }) : null}
       {isOpened && (
-        <div 
+        <div
           className="modal"
           role="dialog"
           aria-modal="true"
           data-testid="modal-testid"
-          >
-
-
+        >
           <div className="content">
             {Content}
             <button
               type="button"
               data-testid="close-modal"
-              onClick={() => setIsOpened(false)}
+              onClick={handleClose}
             >
               <Icon name="close" />
             </button>
@@ -35,12 +43,14 @@ const Modal = ({ opened, Content, children }) => {
 
 Modal.defaultProps = {
   opened: false,
+  onClose: () => null,
 }
 
 Modal.propTypes = {
   opened: PropTypes.bool,
   Content: PropTypes.node.isRequired,
   children: PropTypes.func.isRequired,
+  onClose: PropTypes.func,
 }
 
 export default Modal;

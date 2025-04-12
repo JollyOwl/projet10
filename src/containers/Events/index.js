@@ -43,6 +43,9 @@ const EventList = () => {
     new Set(data.events.map((event) => event.type))
   );
 
+  // Trouver l'événement sélectionné
+  const selectedEvent = data.events.find(event => event.id === selectedEventId);
+
   // Gestionnaires d'événements
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -57,15 +60,21 @@ const EventList = () => {
     setSelectedEventId(eventId);
   };
 
+  const handleCloseModal = () => {
+    setSelectedEventId(null);
+  };
+
   return (
     <>
-      {selectedEventId && (
+      {selectedEvent && (
         <Modal
-          Content={<ModalEvent event={selectedEventId} />}
-          onClose={() => setSelectedEventId(null)}
-        />
+          opened
+          Content={<ModalEvent event={selectedEvent} />}
+          onClose={handleCloseModal}
+        >
+          {() => null}
+        </Modal>
       )}
-
       <div className="SelectContainer">
         <Select
           selection={eventTypes}
@@ -80,7 +89,7 @@ const EventList = () => {
         {visibleEvents.map((event) => (
           <EventCard
             key={event.id}
-            imageSrc={event.cover} // Assuming event.cover contains the image URL
+            imageSrc={event.cover} 
             title={event.title}
             date={new Date(event.date)}
             label={event.type}
