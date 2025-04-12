@@ -34,26 +34,26 @@ const Page = () => {
         <p>Nous organisons des événements sur mesure partout dans le monde</p>
         <div className="ListContainer">
           <ServiceCard imageSrc="/images/priscilla-du-preez-Q7wGvnbuwj0-unsplash1.png">
-            <h3>Soirée d’entreprise</h3>
-            Une soirée d’entreprise vous permet de réunir vos équipes pour un
+            <h3>Soirée d&apos;entreprise</h3>
+            Une soirée d&apos;entreprise vous permet de réunir vos équipes pour un
             moment convivial afin de valoriser votre société en projetant une
-            image dynamique. Nous vous proposons d’organiser pour vous vos
-            diners et soirée d’entreprise
+            image dynamique. Nous vous proposons d&apos;organiser pour vous vos
+            diners et soirée d&apos;entreprise
           </ServiceCard>
           <ServiceCard imageSrc="/images/hall-expo.png">
             <h3>Conférences</h3>
-            724 events vous propose d’organiser votre évènement, quelle que soit
-            sa taille, en s’adaptant à votre demande et à vos demandes. En tant
-            que spécialistes de l’évènementiel, nous saurons trouver le lieu
+            724 events vous propose d&apos;organiser votre évènement, quelle que soit
+            sa taille, en s&apos;adaptant à votre demande et à vos demandes. En tant
+            que spécialistes de l&apos;évènementiel, nous saurons trouver le lieu
             parfait ainsi que des solutions inédites pour capter votre audience
             et faire de cet évènement un succès
           </ServiceCard>
           <ServiceCard imageSrc="/images/sophia-sideri-LFXMtUuAKK8-unsplash1.png">
             <h3>Experience digitale</h3>
             Notre agence experte en contenus immersifs offre des services de
-            conseil aux entreprises, pour l’utilisation de la réalité virtuelle,
-            de la réalité augmentée et de la réalité mixte de l’animation
-            événementielle, à la veille technologique jusqu’au développement de
+            conseil aux entreprises, pour l&apos;utilisation de la réalité virtuelle,
+            de la réalité augmentée et de la réalité mixte de l&apos;animation
+            événementielle, à la veille technologique jusqu&apos;au développement de
             module de formation innovant
           </ServiceCard>
         </div>
@@ -64,7 +64,7 @@ const Page = () => {
       </section>
       <section className="PeoplesContainer">
         <h2 className="Title">Notre équipe</h2>
-        <p>Une équipe d’experts dédiés à l’ogranisation de vos événements</p>
+        <p>Une équipe d&apos;experts dédiés à l&apos;organisation de vos événements</p>
         <div className="ListContainer">
           <PeopleCard
             imageSrc="/images/stephanie-liverani-Zz5LQe-VSMY-unsplash.png"
@@ -123,13 +123,17 @@ const Page = () => {
     <footer className="row">
       <div className="col presta">
         <h3>Notre derniére prestation</h3>
-        <EventCard
-          imageSrc={lastEvent?.cover}
-          title={lastEvent?.title}
-          date={new Date(lastEvent?.date)}
-          small
-          label="boom"
-        />
+        {lastEvent && lastEvent.cover && lastEvent.title && lastEvent.date ? (
+          <EventCard
+            imageSrc={lastEvent.cover}
+            title={lastEvent.title}
+            date={new Date(lastEvent.date)}
+            small
+            label="boom"
+          />
+        ) : (
+          <p>Aucune prestation récente</p>
+        )}
       </div>
       <div className="col contact">
         <h3>Contactez-nous</h3>

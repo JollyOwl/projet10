@@ -3,7 +3,7 @@ import Field, { FIELD_TYPES } from "./index";
 
 describe("When a field is created", () => {
   it("a name is set on the field", () => {
-    render(<Field name="field-name" />);
+    render(<Field name="field-name" label="Field Name" />);
     const fieldElement = screen.getByTestId("field-testid");
     expect(fieldElement).toBeInTheDocument();
     expect(fieldElement.name).toEqual("field-name");
