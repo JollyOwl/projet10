@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import Home from "./index";
 import DataContext from "../../contexts/DataContext";
 
+// Données mockées déplacées au début du fichier
 const mockDataContextValue = {
   last: { id: 1, name: 'Last Event' },
   data: [{ id: 1, name: 'Event 1' }, { id: 2, name: 'Event 2' }],
@@ -27,13 +28,14 @@ describe("Quand le formulaire est créé", () => {
       expect(screen.getByRole('textbox', { name: /email/i })).toBeInTheDocument();
       const submitButton = screen.getByRole("button", { name: /Envoyer/i });
       fireEvent.click(submitButton);
-     // expect(screen.getByRole("dialog")).toBeInTheDocument();
-     // expect(screen.getByText("Message envoyé !")).toBeInTheDocument();
+      // expect(screen.getByRole("dialog")).toBeInTheDocument();
+      // expect(screen.getByText("Message envoyé !")).toBeInTheDocument();
     });
   });
 });
 
 describe("Quand une page est créée", () => {
+  // Chaque test sera implémenté plus tard
   it("une liste d'événements est affichée", () => {
     // à implémenter
   });

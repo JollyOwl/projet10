@@ -7,11 +7,8 @@ const Modal = ({ opened, Content, children, onClose }) => {
   const [isOpened, setIsOpened] = useState(opened);
 
   useEffect(() => {
-    // Si la prop `opened` change, mettez à jour l'état du modal
-    if (opened !== isOpened) {
-      setIsOpened(opened);
-    }
-  }, [opened, isOpened]); // Assurez-vous que l'état change uniquement si la prop change
+    setIsOpened(opened);
+  }, [opened]);
 
   const handleClose = () => {
     setIsOpened(false);
@@ -47,13 +44,13 @@ const Modal = ({ opened, Content, children, onClose }) => {
 Modal.defaultProps = {
   opened: false,
   onClose: () => null,
-};
+}
 
 Modal.propTypes = {
   opened: PropTypes.bool,
   Content: PropTypes.node.isRequired,
   children: PropTypes.func.isRequired,
   onClose: PropTypes.func,
-};
+}
 
 export default Modal;

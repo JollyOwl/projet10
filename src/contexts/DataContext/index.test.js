@@ -1,53 +1,60 @@
 import { render, screen } from "@testing-library/react";
 import { DataProvider, api, useData } from "./index";
 
-describe("When a data context is created", () => {
-  it("a call is executed on the events.json file", async () => {
-    api.loadData = jest.fn().mockReturnValue({ result: "ok" });
-    const Component = () => {
-      const { data } = useData();
-      return <div>{data?.result}</div>;
-    };
+// Mock data
+const mockDataSuccess = { result: "ok" };
+const mockDataError = "error on calling events";
+
+const MockComponentWithData = () => {
+  const { data } = useData();
+  return <div>{data?.result}</div>;
+};
+
+const MockComponentWithError = () => {
+  const { error } = useData();
+  return <div>{error}</div>;
+};
+
+describe("When DataContext is used", () => {
+  it("loads data and displays it when call is successful", async () => {
+    api.loadData = jest.fn().mockReturnValue(mockDataSuccess);
+
     render(
       <DataProvider>
-        <Component />
+        <MockComponentWithData />
       </DataProvider>
     );
+
     const dataDisplayed = await screen.findByText("ok");
     expect(dataDisplayed).toBeInTheDocument();
   });
-  describe("and the events call failed", () => {
-    it("the error is dispatched", async () => {
-      window.console.error = jest.fn();
-      api.loadData = jest.fn().mockRejectedValue("error on calling events");
 
-      const Component = () => {
-        const { error } = useData();
-        return <div>{error}</div>;
-      };
+  describe("when the API call fails", () => {
+    it("displays the error returned by the API", async () => {
+      window.console.error = jest.fn();
+      api.loadData = jest.fn().mockRejectedValue(mockDataError);
+
       render(
         <DataProvider>
-          <Component />
+          <MockComponentWithError />
         </DataProvider>
       );
-      const dataDisplayed = await screen.findByText("error on calling events");
-      expect(dataDisplayed).toBeInTheDocument();
+
+      const errorDisplayed = await screen.findByText(mockDataError);
+      expect(errorDisplayed).toBeInTheDocument();
     });
   });
-  it("api.loadData", () => {
+
+  it("calls api.loadData with fetch mock", () => {
     window.console.error = jest.fn();
-    global.fetch = jest.fn().mockResolvedValue(() =>
-      Promise.resolve({
-        json: () => Promise.resolve({ rates: { CAD: 1.42 } }),
-      })
-    );
-    const Component = () => {
-      const { error } = useData();
-      return <div>{error}</div>;
-    };
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ rates: { CAD: 1.42 } }),
+    });
+
     render(
       <DataProvider>
-        <Component />
+        <div>Test</div>
       </DataProvider>
     );
   });
