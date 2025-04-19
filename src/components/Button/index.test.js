@@ -1,37 +1,37 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import Button, { BUTTON_TYPES } from "./index";
 
-describe("When a button is created", () => {
-  it("the button must include a title", () => {
-    render(<Button title="my-button" type={BUTTON_TYPES.DEFAULT} />);
+describe("Button Component", () => {
+  // fonction avec props optionnelles pour éviter les répétitions de render
+  const renderButton = (props = {}) => render(<Button {...props} />);
+
+  it("includes a title", () => {
+    renderButton({ title: "my-button", type: BUTTON_TYPES.DEFAULT });
     const buttonElement = screen.getByTitle("my-button");
     expect(buttonElement).toBeInTheDocument();
   });
-  it("the button must display a label", () => {
-    render(<Button>label</Button>);
+
+  it("displays a label", () => {
+    renderButton({ children: "label", type: BUTTON_TYPES.DEFAULT });
     const buttonElement = screen.getByText(/label/);
     expect(buttonElement).toBeInTheDocument();
   });
-  describe("and it's clicked", () => {
-    it("an event onClick it executed", () => {
+
+  describe("when clicked", () => {
+    it("executes the onClick event", () => {
       const onClick = jest.fn();
-      render(<Button onClick={onClick} />);
+      renderButton({ onClick });
       const buttonElement = screen.getByTestId("button-test-id");
-      fireEvent(
-        buttonElement,
-        new MouseEvent("click", {
-          bubbles: true,
-          cancelable: true,
-        })
-      );
-      expect(onClick.mock.calls.length).toBeGreaterThan(0);
+      fireEvent.click(buttonElement);
+      expect(onClick).toHaveBeenCalled();
     });
   });
-  describe("and selected type is submit", () => {
-    it("an input submit is created", () => {
-      render(<Button type={BUTTON_TYPES.SUBMIT}>label</Button>);
+
+  describe("when the type is submit", () => {
+    it("creates a submit input", () => {
+      renderButton({ type: BUTTON_TYPES.SUBMIT, children: "label" });
       const buttonElement = screen.getByTestId("button-test-id");
-      expect(buttonElement.type).toEqual("submit");
+      expect(buttonElement.type).toBe("submit");
     });
   });
 });

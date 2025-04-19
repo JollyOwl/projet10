@@ -7,7 +7,7 @@ export const FIELD_TYPES = {
   TEXTAREA: 2,
 };
 
-const Field = ({ type = FIELD_TYPES.INPUT_TEXT, label = "", name, placeholder }) => {
+const Field = ({ type = FIELD_TYPES.INPUT_TEXT, label = "", name, placeholder, onChange }) => {
   let component;
   const id = `field-${name}`;
   switch (type) {
@@ -18,6 +18,7 @@ const Field = ({ type = FIELD_TYPES.INPUT_TEXT, label = "", name, placeholder })
           name={name}
           id={id}
           placeholder={placeholder}
+          onChange={onChange}
           data-testid="field-testid"
         />
       );
@@ -32,6 +33,7 @@ const Field = ({ type = FIELD_TYPES.INPUT_TEXT, label = "", name, placeholder })
           name={name}
           id={id}
           placeholder={placeholder}
+          onChange={onChange}
           data-testid="field-testid"
         />
       );
@@ -49,12 +51,14 @@ Field.propTypes = {
   name: PropTypes.string.isRequired,
   label: PropTypes.string,
   placeholder: PropTypes.string,
+  onChange: PropTypes.func,
 };
 
 Field.defaultProps = {
   placeholder: "",
   type: FIELD_TYPES.INPUT_TEXT,
   label: "",
+  onChange: () => {},
 };
 
 export default Field;

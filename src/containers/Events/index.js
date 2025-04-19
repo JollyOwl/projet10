@@ -17,7 +17,7 @@ const EventList = () => {
 
   // Gestion des erreurs de chargement
   if (error) {
-    return <div>Une erreur est survenue lors du chargement des événements.</div>;
+    return <div>An error occured</div>;
   }
 
   // Gestion du chargement initial
