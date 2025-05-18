@@ -14,3 +14,5 @@ export const MONTHS = {
 };
 
 export const getMonth = (date) => MONTHS[date.getMonth()];
+// Utilisation de la méthode getMonth() renvoyant un nombre entre 0 et 11
+// On utilise l'index pour récupérer le nom du mois correspondant dans l'objet MONTHS

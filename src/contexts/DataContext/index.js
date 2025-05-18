@@ -39,7 +39,7 @@ export const DataProvider = ({ children }) => {
       console.log("fetched data:", newData);
       setData(newData);
     } catch (err) {
-      setFetchError(err); // Utilisation de fetchError pour ne pas faire de shadowing
+      setFetchError(err); 
     }
   }, []);
 
@@ -59,7 +59,7 @@ export const DataProvider = ({ children }) => {
 
   const value = useMemo(() => ({
     data,
-    error: fetchError, // Utilisation de fetchError ici
+    error: fetchError, 
     last: Array.isArray(data?.events) && data.events.length > 0 ? data.events[data.events.length - 1] : null,
   }), [data, fetchError]);
 
@@ -75,7 +75,7 @@ DataProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-// Assure-toi que cet export est bien en dehors de DataProvider
+
 export const useData = () => useContext(DataContext);
 
 export default DataContext;
