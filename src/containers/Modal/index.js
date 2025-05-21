@@ -3,22 +3,26 @@ import { useState, useEffect } from "react";
 import Icon from "../../components/Icon";
 import "./style.scss";
 
-const Modal = ({ opened, Content, children, onClose }) => {
-  const [isOpened, setIsOpened] = useState(opened);
+const Modal = ({ opened: localDefaultOpened, Content, children, onClose }) => {
 
+  // On crée un état local pour gérer l'ouverture/fermeture du modal
+  // localValueOpened est une prop transmis par EventList (Modla)
+  const [locaValueOpened, localIsOpened] = useState(localDefaultOpened);
+
+  // UseEffect s'execute à chaque fois que la valeur de localDefaultOpened change
   useEffect(() => {
-    setIsOpened(opened);
-  }, [opened]);
+    localIsOpened(localDefaultOpened);
+  }, [localDefaultOpened]);
 
   const handleClose = () => {
-    setIsOpened(false);
+    localIsOpened(false);
     if (onClose) onClose();
   };
 
   return (
     <>
-      {typeof children === "function" ? children({ isOpened, setIsOpened }) : null}
-      {isOpened && (
+      {typeof children === "function" ? children({ isOpened: locaValueOpened, setIsOpened: localIsOpened }) : null}
+      {locaValueOpened && (
         <div
           className="modal"
           role="dialog"

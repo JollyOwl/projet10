@@ -1,0 +1,40 @@
+@import "src/colors.scss";
+
+.row {
+  display: flex;
+  justify-content: space-around;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  margin: 16px;
+}
+
+footer {
+  background-color: white;
+  color: $black;
+  padding: 32px 0;
+  margin-top: 32px;
+
+  h3 {
+    font-size: 18px;
+    margin-bottom: 16px;
+    color: $primary;
+  }
+
+  address {
+    font-style: normal;
+    margin-bottom: 8px;
+  }
+
+  a {
+    color: $primary;
+    margin-right: 16px;
+    text-decoration: none;
+    
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}

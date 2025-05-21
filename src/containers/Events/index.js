@@ -10,27 +10,53 @@ import "./style.css";
 const PER_PAGE = 9;
 
 const EventList = () => {
-  const { data, error } = useData();
-  const [type, setType] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [selectedEventId, setSelectedEventId] = useState(null);
 
-  // Gestion des erreurs de chargement
+  /* 1. ÉTATS */
+  // Récupération des données
+  const { data, error } = useData();
+  // État du filtre, par défaut le filtre est vide
+  const [type, setType] = useState("");
+  // État de la pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  // État de la modal, par défaut la modal est fermée
+  const [modalEventId, setModalEventId] = useState(null);
+
+  /* 2. GESTIONNAIRES D'ÉTAT */
+  // Gestion de la pagination
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+  // Gestion du filtre
+  const handleTypeChange = (newType) => {
+    setType(newType);
+    setCurrentPage(1); // Réinitialise la pagination lors du changement de filtre
+  };
+  // Gestion de la modal
+  const handleEventClick = (eventId) => {
+    setModalEventId(eventId);
+  };
+  const handleCloseModal = () => {
+    setModalEventId(null);
+  };
+
+  /* 3. CALCULS BASÉS SUR L'ÉTAT */
+  // Gestion des erreurs et chargement
   if (error) {
     return <div>An error occured</div>;
   }
-
-  // Gestion du chargement initial
   if (!data || !data.events) {
     return <div>Chargement des événements...</div>;
   }
 
-  // Filtrage des événements
-  const filteredEvents = data.events.filter(
-    (event) => !type || event.type === type
-  );
+  // Etape intermédiaire: Filtrage des événements par type & base de calcul de la pagination
+  const filteredEvents = data.events.filter((event) => {
+    if (!type) {
+      return true;
+    }
+    return event.type === type;
+  });
 
-  // Calcul de la pagination
+  // Calcul de la pagination avec les événements filtrés
   const pageCount = Math.ceil(filteredEvents.length / PER_PAGE);
   const startIndex = (currentPage - 1) * PER_PAGE;
   const visibleEvents = filteredEvents.slice(
@@ -38,43 +64,22 @@ const EventList = () => {
     startIndex + PER_PAGE
   );
 
-  // Liste des types uniques d'événements
-  const eventTypes = Array.from(
-    new Set(data.events.map((event) => event.type))
-  );
+  // Création des options du select
+    // Extraction des types d'événements uniques
+  const allEventTypes = data.events.map((event) => event.type);
+    // Création d'un Set pour éliminer les doublons
+  const uniqueTypesSet = new Set(allEventTypes);
+   // Conversion du Set en tableau
+  const eventTypes = Array.from(uniqueTypesSet);
 
-  // Trouver l'événement sélectionné
-  const selectedEvent = data.events.find(event => event.id === selectedEventId);
+  // Stockage de l'événement sélectionné pour la modal
+  const selectedEvent = data.events.find(event => event.id === modalEventId);
 
-  // Gestionnaires d'événements
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-
-  const handleTypeChange = (newType) => {
-    setType(newType);
-    setCurrentPage(1); // Réinitialiser à la première page lors du changement de filtre
-  };
-
-  const handleEventClick = (eventId) => {
-    setSelectedEventId(eventId);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedEventId(null);
-  };
-
+  /* 4. RENDU */
   return (
     <>
-      {selectedEvent && (
-        <Modal
-          opened
-          Content={<ModalEvent event={selectedEvent} />}
-          onClose={handleCloseModal}
-        >
-          {() => null}
-        </Modal>
-      )}
+
+      {/* SELECT */}
       <div className="SelectContainer">
         <Select
           selection={eventTypes}
@@ -85,6 +90,7 @@ const EventList = () => {
         />
       </div>
 
+      {/* LISTE DES ÉVÉNEMENTS FILTRÉS */}
       <div className="ListContainer" data-testid="list-container-testid">
         {visibleEvents.map((event) => (
           <EventCard
@@ -93,11 +99,24 @@ const EventList = () => {
             title={event.title}
             date={new Date(event.date)}
             label={event.type}
-            onClick={() => handleEventClick(event.id)}
+            onClick={() => handleEventClick(event.id)} // 
           />
         ))}
       </div>
 
+    {/* MODAL */}
+    {/* Si selectedEvent est différent de null, alors on affiche le modal */}
+     {selectedEvent && (
+        <Modal
+          opened
+          Content={<ModalEvent event={selectedEvent} />}
+          onClose={handleCloseModal}
+        >
+          {() => null}
+        </Modal>
+      )}
+
+      {/* PAGINATION */}
       {pageCount > 1 && (
         <div className="Pagination">
           {[...Array(pageCount)].map((_, index) => (

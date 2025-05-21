@@ -6,11 +6,14 @@
   color: $black;
   align-items: flex-start;
   margin: 8px;
-  span {
+
+  label {
+    color: white;
     font-size: 12pt;
     margin-bottom: 4px;
   }
 }
+
 input {
   height: 60px;
   min-width: 424px;
@@ -27,6 +30,7 @@ input {
 
   font-family: "Manrope", sans-serif;
 }
+
 textarea {
   height: 336px;
   min-width: 424px;

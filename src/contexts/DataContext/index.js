@@ -8,61 +8,53 @@ import {
   useState,
 } from "react";
 
+
+/* CREATION DU CONTEXT */
 const DataContext = createContext({});
 
-// récupère /events.json
+/* RÉCUPÉRATION DES DATA DANS L'OBJET API */
 export const api = {
   loadData: async () => {
-    try {
-      const response = await fetch("/events.json");
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const json = await response.json();
-      console.log("Data fetched:", json);
-      return json;
-    } catch (error) {
-      console.error("Failed to fetch data:", error);
-      throw error;
+    const response = await fetch("/events.json");
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
+    const json = await response.json();
+    return json;
   },
 };
 
-// Fournit les data via le context
+/* HOOK PERSONNALISÉ POUR UTILISER LE CONTEXTE */
+export const useData = () => useContext(DataContext);
+
+/* PROVIDER DU CONTEXTE */
 export const DataProvider = ({ children }) => {
-  const [fetchError, setFetchError] = useState(null); // Renommé pour éviter le shadowing
+  const [fetchError, setFetchError] = useState(null);
   const [data, setData] = useState(null);
 
+  // Gestion d'état 
   const getData = useCallback(async () => {
     try {
       const newData = await api.loadData();
-      console.log("fetched data:", newData);
       setData(newData);
     } catch (err) {
       setFetchError(err); 
     }
   }, []);
 
+  // Récupération des data au montage de <DataProvider>
   useEffect(() => {
     getData();
   }, [getData]);
 
-  useEffect(() => {
-    if (fetchError) {
-      console.error("Error fetching data:", fetchError);
-    } else if (data) {
-      console.log("Data fetched successfully in DataContext.js:", data);
-    } else {
-      console.log("Data is still loading in DataContext.js");
-    }
-  }, [data, fetchError]);
-
+  // utilisation du useMemo pour éviter de re-render
   const value = useMemo(() => ({
     data,
-    error: fetchError, 
-    last: Array.isArray(data?.events) && data.events.length > 0 ? data.events[data.events.length - 1] : null,
+    error: fetchError
   }), [data, fetchError]);
 
+
+  /* RENDU */
   return (
     <DataContext.Provider value={value}>
       {children}
@@ -70,12 +62,8 @@ export const DataProvider = ({ children }) => {
   );
 };
 
-
 DataProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
-
-
-export const useData = () => useContext(DataContext);
 
 export default DataContext;

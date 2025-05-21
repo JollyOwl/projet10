@@ -8,52 +8,71 @@ import "./style.scss";
 const Select = ({
   selection,
   onChange,
-  name,
   titleEmpty,
-  label,
-  selectType = "normal", // Renommé de `type` à `selectType`
+  label
 }) => {
+  /* 1. ÉTATS */
   const [value, setValue] = useState();
   const [collapsed, setCollapsed] = useState(true);
+
+  /* 2. GESTIONNAIRES D'ÉTAT */
   const changeValue = (newValue) => {
     onChange(newValue);
     setValue(newValue);
     setCollapsed(newValue);
   };
+
+  /* 3. CALCULS BASÉS SUR L'ÉTAT */
+  const titleClass = collapsed ? "SelectTitle--show" : "SelectTitle--hide";
+  const buttonClass = collapsed ? "open" : "close";
+
+  /* 4. RENDU */
   return (
-    <div className={`SelectContainer ${selectType}`} data-testid="select-testid"> {/* Utilisation de `selectType` ici */}
+    <div className="SelectContainer" data-testid="select-testid">
       {label && <div className="label">{label}</div>}
+
+      {/* CONTENEUR DU DROPDOWN */}
+
+      {/* Affichage de la selection actuellle */}
       <div className="Select">
         <ul>
-          <li className={collapsed ? "SelectTitle--show" : "SelectTitle--hide"}>
+          {/* classe conditionnelle du titre */}
+          <li className={titleClass}>
+            {/* On affiche la valeur choisie si elle existe ; sinon, "Toutes" s'affiche uniquement si titleEmpty est false */}
             {value || (!titleEmpty && "Toutes")}
           </li>
+
+          {/* Affichage des options */}
           {!collapsed && (
             <>
+              {/* Affichage de l'option "Toutes" si titleEmpty est false */}
               {!titleEmpty && (
                 <li onClick={() => changeValue(null)}>
                   <input defaultChecked={!value} name="selected" type="radio" />{" "}
                   Toutes
                 </li>
               )}
-              {selection.map((s) => (
-                <li key={s} onClick={() => changeValue(s)}>
+              {/* Pour chaque catégorie, on crée une option cliquable avec une radio cochée si elle est sélectionnée */}
+              {selection.map((categorie) => (
+                <li key={categorie} onClick={() => changeValue(categorie)}>
+                  {/* On coché la radio si la valeur est égale à la catégorie */}
                   <input
-                    defaultChecked={value === s}
+                    defaultChecked={value === categorie}
                     name="selected"
                     type="radio"
                   />{" "}
-                  {s}
+                  {categorie}
                 </li>
               ))}
             </>
           )}
         </ul>
-        <input type="hidden" value={value || ""} name={name} />
+
+        {/* BOUTON POUR OUVRIR OU FERMER LE DROPDOWN */}
         <button
           type="button"
           data-testid="collapse-button-testid"
-          className={collapsed ? "open" : "close"}
+          className={buttonClass}
           onClick={(e) => {
             e.preventDefault();
             setCollapsed(!collapsed);
@@ -84,18 +103,14 @@ const Arrow = () => (
 Select.propTypes = {
   selection: PropTypes.arrayOf(PropTypes.string).isRequired,
   onChange: PropTypes.func,
-  name: PropTypes.string,
   titleEmpty: PropTypes.bool,
   label: PropTypes.string,
-  selectType: PropTypes.string, // Modification ici
 };
 
 Select.defaultProps = {
   onChange: () => null,
   titleEmpty: false,
   label: "",
-  selectType: "normal", // Modification ici
-  name: "select",
 };
 
 export default Select;

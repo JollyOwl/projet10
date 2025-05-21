@@ -6,51 +6,48 @@ import "./style.scss";
 
 const Slider = () => {
 
-/* UTILISATION DU CONTEXT */
-
-// utilisation du context DataContext
+  /* 1. ÉTATS */
+  // Récupération des données
   const { data } = useData();
+  // État de l'index du slide actif
   const [index, setIndex] = useState(0);
 
-
-/* TRI DES EVENTS */
-
-// Fonction pour renvoyer un tableau d'événements triés par date décroissante
+  /* 2. CALCULS BASÉS SUR LES DONNEES RECUPEREES */
+  // Fonction pour renvoyer un tableau d'événements triés par date décroissante
   const sortEventsByDate = (events) => {
     if (!events) return [];
-    
+    // Si B est supérieur à A, alors B est avant A / Si A est supérieur à B, alors A est avant B
     return events.sort((eventA, eventB) => {
       const dateA = new Date(eventA.date);
       const dateB = new Date(eventB.date);
-      return dateB - dateA; // Tri décroissant
+      return dateB - dateA;
     });
   };
-  // Tri sur les événements #focus
+
+  // Application du tri sur les événements #focus
   const sortedEvents = sortEventsByDate(data?.focus);
 
-  // radio buttons 
+  /* 3. GESTIONNAIRES D'ÉTAT */
+  // Gestion du changement des radio buttons
   const handleRadioChange = (radioIndex) => {
     setIndex(radioIndex);
   };
 
-/* DEFILEMENT AUTOMATIQUE */
-
   // Gestion du défilement automatique grâce à l'index
   const nextCard = () => {
-    
+    // Si il n'y a pas d'événements ou que le tableau est vide, on ne fait rien
     if (!sortedEvents || sortedEvents.length === 0) {
       return; 
     }
-
     let nextIndex;
+
+   // Si on est au dernier slide, on retourne au premier
     if (index === sortedEvents.length - 1) {
-      // Si on est au dernier slide, on retourne au premier
       nextIndex = 0;
     } else {
-      // Sinon, on passe au slide suivant
+    // Sinon, on passe au slide suivant
       nextIndex = index + 1;
     }
-
     // Met à jour l'index
     setIndex(nextIndex);
   };
@@ -58,13 +55,10 @@ const Slider = () => {
   // Effet pour le défilement automatique
   useEffect(() => {
     const timeoutId = setTimeout(nextCard, 5000);
-    
-    return () => clearTimeout(timeoutId); // nettoyage du timeout
+    return () => clearTimeout(timeoutId); // Nettoyage du timeout
   }, [index, sortedEvents]);
 
-  
-  /* UI ELEMENTS */
-
+  /* 4. RENDU */
   return (
     <div className="SlideCardList">
       {/* Slides */}
@@ -85,6 +79,7 @@ const Slider = () => {
               <div className="SlideCard__description">
                 <h3>{event.title}</h3>
                 <p>{event.description}</p>
+                
                 <div>{getMonth(new Date(event.date))}</div>
               </div>
             </div>
@@ -102,7 +97,6 @@ const Slider = () => {
               name="radio-button"
               checked={index === idx}
               onChange={() => handleRadioChange(idx)}
-              aria-label={`Slide ${idx + 1}`}
             />
           ))}
         </div>

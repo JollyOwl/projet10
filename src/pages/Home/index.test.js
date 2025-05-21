@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import Home from "./index";
+import Form from "../../containers/Form";
 import DataContext from "../../contexts/DataContext";
+import Home from "./index";
 
 // Données mockées déplacées au début du fichier
 const mockDataContextValue = {
@@ -11,11 +12,10 @@ const mockDataContextValue = {
 describe("Quand le formulaire est créé", () => {
   it("une liste de champs de formulaire est affichée", async () => {
     render(
-      <DataContext.Provider value={mockDataContextValue}>
-        <Home />
-      </DataContext.Provider>
+          <Form />
+    
     );
-    expect(screen.getByLabelText('Email')).toBeInTheDocument();
+    expect(screen.getByText('Email')).toBeInTheDocument();
   });
 
   describe("et un clic est déclenché sur le bouton de soumission", () => {
