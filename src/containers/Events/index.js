@@ -53,6 +53,7 @@ const EventList = () => {
     if (!type) {
       return true;
     }
+    // On retourne les événements qui ont le type correspondant à la valeur de l'état type
     return event.type === type;
   });
 

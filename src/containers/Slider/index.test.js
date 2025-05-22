@@ -43,6 +43,7 @@ describe("Slider component", () => {
     );
 
     // Vérifie que les événements sont affichés dans l'ordre décroissant
+   // findAllByRole renvoie un tableau, titles[0] est le premier élément du tableau
     const titles = await screen.findAllByRole('heading', { level: 3 });
     expect(titles[0]).toHaveTextContent("Sneakercraze market"); // Plus récent
     expect(titles[1]).toHaveTextContent("Nordic design week");
@@ -58,7 +59,7 @@ describe("Slider component", () => {
       </DataProvider>
     );
 
-    // Vérifie que le composant ne plante pas avec des données invalides
+    // S'il n'y a pas de données, on ne peux pas afficher le titre des événements
     expect(screen.queryByRole('heading')).not.toBeInTheDocument();
   });
 
@@ -76,6 +77,7 @@ describe("Slider component", () => {
 
     // Vérifie le slide initial
     expect(screen.getByText("Sneakercraze market")).toBeInTheDocument();
+    
 
     // Avance le temps de 5 secondes
     act(() => {
